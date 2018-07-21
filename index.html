@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Github Profile Finder</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<style>
+		body{
+			background: grey;
+		}
+
+		img{
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<form id="userform" >
+			<div class="form-group">
+				<label style="padding-top:40px" ><b><h3>Github Username:</h3></b></label>
+				<input type="text" id="username" class="form-control">
+			</div>
+		</form>
+		<div id="profile"></div>
+	</div>
+
+	<script>
+		function getProfile( e ){
+			e.preventDefault();
+
+			var username = document.getElementById('username').value;
+			if(!username || username == ''){
+				alert('Enter Valid Username');
+			}
+
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function(){
+				if(xhttp.status == 404){
+					alert('Username Doesnot Exist');
+				}
+				if(xhttp.readyState == 4 && xhttp.status == 200){
+					var user = JSON.parse(xhttp.responseText);
+					if(user.name == "null"){
+						alert('Username Doesnot Exist');
+					}
+					else{
+						document.getElementById('profile').innerHTML = `<div class="panel panel-default">
+						 		<div class="panel-heading">
+						    	<h3 class="panel-title">${user.name}</h3>
+						  		</div>
+						  		<div class="panel-body">
+							    	<div class="row">
+							    		<div class="col-md-6">
+							    			<img src="${user.avatar_url}">
+							    		</div>
+							    		<div class="col-md-6">
+							    			<h3><span class="label label-primary">Public Repos ${user.public_repos}</span>
+							    			<span class="label label-danger">Public Gists ${user.public_gists}</span></h3>
+							    			<br>
+							    			<ul class="list-group">
+							    				<li class="list-group-item"><b>Bio :</b> ${user.bio}</li>
+							    				<li class="list-group-item"><b>Email :</b> ${user.email}</li>
+							    			</ul>
+							    			<a class="btn btn-success" target="_blank" href="${user.html_url}">Visit Github</a>
+							    		</div>
+							    	</div>
+						  		</div>
+								</div>`;
+					}
+				}
+			}
+
+			xhttp.open('GET', 'https://api.github.com/users/'+ username, true);
+			xhttp.send();
+		}
+
+		document.getElementById('userform').addEventListener('submit', getProfile, false);
+
+		//getProfile();
+	</script>
+</body>
+</html>
